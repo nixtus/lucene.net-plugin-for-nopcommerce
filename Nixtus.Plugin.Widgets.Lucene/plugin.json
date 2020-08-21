@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Widgets",
+  "FriendlyName": "Lucene",
+  "SystemName": "Nixtus.Misc.Lucene",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.30" ],
+  "Author": "Nixtus, LLC",
+  "DisplayOrder": 1,
+  "FileName": "Nixtus.Plugin.Widgets.Lucene.dll",
+  "Description": "This plugin uses Lucene.NET to index and search products"
+}
