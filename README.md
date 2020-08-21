@@ -1,2 +1,3 @@
-# lucene.net-plugin-for-nopcommerce
+# Lucene.NET Plugin for nopCommerce
+
 nopCommerce search plugin using Lucene.NET
