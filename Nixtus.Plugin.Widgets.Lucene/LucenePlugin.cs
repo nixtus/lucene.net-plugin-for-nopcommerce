@@ -1,9 +1,9 @@
-﻿using J2N.Collections.Generic;
-using Nop.Core;
+﻿using Nop.Core;
 using Nop.Services.Common;
 using Nop.Services.Configuration;
 using Nop.Services.Localization;
 using Nop.Services.Plugins;
+using System.Collections.Generic;
 
 namespace Nixtus.Plugin.Widgets.Lucene
 {
