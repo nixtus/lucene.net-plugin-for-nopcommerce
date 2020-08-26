@@ -2,7 +2,7 @@
   "Group": "Widgets",
   "FriendlyName": "Lucene",
   "SystemName": "Nixtus.Misc.Lucene",
-  "Version": "1.00",
+  "Version": "1.10",
   "SupportedVersions": [ "4.30" ],
   "Author": "Nixtus, LLC",
   "DisplayOrder": 1,
