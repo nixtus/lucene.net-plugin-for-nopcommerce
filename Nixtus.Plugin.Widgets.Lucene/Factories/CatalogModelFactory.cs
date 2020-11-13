@@ -65,9 +65,6 @@ namespace Nixtus.Plugin.Widgets.Lucene.Factories
         private readonly IWorkContext _workContext;
         private readonly MediaSettings _mediaSettings;
         private readonly VendorSettings _vendorSettings;
-        private readonly ICustomerService _customerService;
-        private readonly ICacheKeyService _cacheKeyService;
-        private readonly IStaticCacheManager _staticCacheManager;
 
         private readonly LuceneSettings _luceneSettings;
         private readonly ILuceneService _luceneService;
@@ -105,18 +102,15 @@ namespace Nixtus.Plugin.Widgets.Lucene.Factories
             IWorkContext workContext,
             MediaSettings mediaSettings,
             VendorSettings vendorSettings,
-            LuceneSettings luceneSettings, ILuceneService luceneService,
-            ICacheKeyService cacheKeyService, ICustomerService customerService, IStaticCacheManager staticCacheManager)
+            LuceneSettings luceneSettings, ILuceneService luceneService)
             : base(blogSettings,
              catalogSettings,
              displayDefaultMenuItemSettings,
              forumSettings,
              actionContextAccessor,
-             cacheKeyService,
              categoryService,
              categoryTemplateService,
              currencyService,
-             customerService,
              eventPublisher,
              httpContextAccessor,
              localizationService,
@@ -129,7 +123,7 @@ namespace Nixtus.Plugin.Widgets.Lucene.Factories
              productTagService,
              searchTermService,
              specificationAttributeService,
-             staticCacheManager,
+             cacheManager,
              storeContext,
              topicService,
              urlHelperFactory,
@@ -170,8 +164,6 @@ namespace Nixtus.Plugin.Widgets.Lucene.Factories
             _workContext = workContext;
             _mediaSettings = mediaSettings;
             _vendorSettings = vendorSettings;
-            _customerService = customerService;
-            _cacheKeyService = cacheKeyService;
 
             _luceneSettings = luceneSettings;
             _luceneService = luceneService;

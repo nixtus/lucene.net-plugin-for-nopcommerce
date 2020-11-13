@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <Copyright>Copyright © Nixtus, LLC</Copyright>
     <Company>Nixtus, LLC</Company>
     <Authors>Nixtus, LLC</Authors>
@@ -36,28 +36,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00011" />
-    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00011" />
-    <PackageReference Include="Lucene.Net.Queries" Version="4.8.0-beta00011" />
-    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00011" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Lucene.Net">
-      <HintPath>..\..\Presentation\Nop.Web\Plugins\Misc.Lucene\Lucene.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Lucene.Net.Analysis.Common">
-      <HintPath>..\..\Presentation\Nop.Web\Plugins\Misc.Lucene\Lucene.Net.Analysis.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Lucene.Net.Queries">
-      <HintPath>..\..\Presentation\Nop.Web\Plugins\Misc.Lucene\Lucene.Net.Queries.dll</HintPath>
-    </Reference>
-    <Reference Include="Lucene.Net.QueryParser">
-      <HintPath>..\..\Presentation\Nop.Web\Plugins\Misc.Lucene\Lucene.Net.QueryParser.dll</HintPath>
-    </Reference>
-    <Reference Include="Lucene.Net.Sandbox">
-      <HintPath>..\..\Presentation\Nop.Web\Plugins\Misc.Lucene\Lucene.Net.Sandbox.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00006" />
+    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00006" />
+    <PackageReference Include="Lucene.Net.Queries" Version="4.8.0-beta00006" />
+    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00006" />
+    <PackageReference Include="Lucene.Net.Sandbox" Version="4.8.0-beta00006" />
   </ItemGroup>
 
   <ItemGroup>
