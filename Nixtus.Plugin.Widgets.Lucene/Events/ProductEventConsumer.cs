@@ -2,6 +2,7 @@
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Events;
 using Nop.Services.Events;
+using System.Threading.Tasks;
 
 namespace Nixtus.Plugin.Widgets.Lucene.Events
 {
@@ -16,19 +17,19 @@ namespace Nixtus.Plugin.Widgets.Lucene.Events
             _luceneService = luceneService;
         }
 
-        public void HandleEvent(EntityInsertedEvent<Product> eventMessage)
+        public async Task HandleEventAsync(EntityInsertedEvent<Product> eventMessage)
         {
-            _luceneService.AddUpdateLuceneIndex(eventMessage.Entity);
+            await _luceneService.AddUpdateLuceneIndex(eventMessage.Entity);
         }
 
-        public void HandleEvent(EntityDeletedEvent<Product> eventMessage)
+        public async Task HandleEventAsync(EntityDeletedEvent<Product> eventMessage)
         {
-            _luceneService.DeleteLuceneIndexRecord(eventMessage.Entity.Id);
+            await Task.Run(() => _luceneService.DeleteLuceneIndexRecord(eventMessage.Entity.Id));
         }
 
-        public void HandleEvent(EntityUpdatedEvent<Product> eventMessage)
+        public async Task HandleEventAsync(EntityUpdatedEvent<Product> eventMessage)
         {
-            _luceneService.AddUpdateLuceneIndex(eventMessage.Entity);
+            await _luceneService.AddUpdateLuceneIndex(eventMessage.Entity);
         }
     }
 }

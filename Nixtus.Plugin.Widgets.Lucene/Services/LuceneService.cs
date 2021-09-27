@@ -5,7 +5,6 @@ using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
-using Microsoft.AspNetCore.Http;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Infrastructure;
@@ -16,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace Nixtus.Plugin.Widgets.Lucene.Services
@@ -23,8 +23,6 @@ namespace Nixtus.Plugin.Widgets.Lucene.Services
     public class LuceneService : ILuceneService
     {
         #region Fields
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IWebHelper _webHelper;
         private readonly INopFileProvider _fileProvider;
         private readonly IProductTagService _productTagService;
         private readonly IRepository<ProductProductTagMapping> _productProductTagMappingRepository;
@@ -41,14 +39,21 @@ namespace Nixtus.Plugin.Widgets.Lucene.Services
         #endregion
 
         #region Ctor
-        public LuceneService(IHttpContextAccessor httpContextAccessor, IWebHelper webHelper, INopFileProvider fileProvider, IProductTagService productTagService,
-        IRepository<ProductProductTagMapping> productProductTagMappingRepository, IProductService productService, IStoreContext storeContext,
-        ICategoryService categoryService, IRepository<ProductCategory> productCategoryMappingRepository, IManufacturerService manufacturerService,
-        IRepository<ProductManufacturer> productManufacturersMappingRepository, ILogger logger, IRepository<ProductTag> productTagRepository, IRepository<Category> categoryRepository,
-        IRepository<Manufacturer> manufacturerRepository)
+        public LuceneService(
+            INopFileProvider fileProvider,
+            IProductTagService productTagService,
+            IRepository<ProductProductTagMapping> productProductTagMappingRepository,
+            IProductService productService,
+            IStoreContext storeContext,
+            ICategoryService categoryService,
+            IRepository<ProductCategory> productCategoryMappingRepository,
+            IManufacturerService manufacturerService,
+            IRepository<ProductManufacturer> productManufacturersMappingRepository,
+            ILogger logger,
+            IRepository<ProductTag> productTagRepository,
+            IRepository<Category> categoryRepository,
+            IRepository<Manufacturer> manufacturerRepository)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _webHelper = webHelper;
             _fileProvider = fileProvider;
             _productTagService = productTagService;
             _productProductTagMappingRepository = productProductTagMappingRepository;
@@ -332,26 +337,26 @@ namespace Nixtus.Plugin.Widgets.Lucene.Services
                         i = 1;
                     }
                 }
-                
+
                 writer.Dispose();
             }
         }
         #endregion
 
         #region Public Methods
-        public void AddUpdateLuceneIndex(Product product)
+        public async Task AddUpdateLuceneIndex(Product product)
         {
             var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
             var iwc = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
             iwc.OpenMode = OpenMode.CREATE_OR_APPEND;
 
-            var productTagNames = _productTagService.GetAllProductTagsByProductId(product.Id).Select(x => x.Name);
+            var productTagNames = (await _productTagService.GetAllProductTagsByProductIdAsync(product.Id)).Select(x => x.Name);
 
-            var productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
-            var categories = _categoryService.GetCategoriesByIds(productCategories.Select(x => x.CategoryId).ToArray());
+            var productCategories = await _categoryService.GetProductCategoriesByProductIdAsync(product.Id);
+            var categories = await _categoryService.GetCategoriesByIdsAsync(productCategories.Select(x => x.CategoryId).ToArray());
 
-            var productManufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id);
-            var manufacturers = from m in _manufacturerService.GetAllManufacturers()
+            var productManufacturers = await _manufacturerService.GetProductManufacturersByProductIdAsync(product.Id);
+            var manufacturers = from m in await _manufacturerService.GetAllManufacturersAsync()
                                 join pm in productManufacturers on m.Id equals pm.ManufacturerId
                                 select m;
 
@@ -400,36 +405,36 @@ namespace Nixtus.Plugin.Widgets.Lucene.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while clearing lucene indexes", ex);
+                _logger.ErrorAsync("Error occurred while clearing lucene indexes", ex);
             }
         }
 
-        public void BuildIndex()
+        public async Task BuildIndex()
         {
             var pageIndex = 0;
             var pageSize = 5000;
 
             // get all product categories, tags and manufacturers so that we aren't
             // requesting them for every product
-            var productTags = _productTagService.GetAllProductTags().ToList();
+            var productTags = (await _productTagService.GetAllProductTagsAsync()).ToList();
             var productProductTags = (from ptt in _productProductTagMappingRepository.Table
                                       join pt in _productTagRepository.Table on ptt.ProductTagId equals pt.Id
                                       select ptt).ToList();
 
 
-            var categories = _categoryService.GetAllCategories().ToList();
+            var categories = (await _categoryService.GetAllCategoriesAsync()).ToList();
             var productCategories = (from pc in _productCategoryMappingRepository.Table
                                      join c in _categoryRepository.Table on pc.CategoryId equals c.Id
                                      select pc).ToList();
 
-            var manufacturers = _manufacturerService.GetAllManufacturers().ToList();
+            var manufacturers = (await _manufacturerService.GetAllManufacturersAsync()).ToList();
             var productManufacturers = (from pm in _productManufacturersMappingRepository.Table
                                         join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
                                         select pm).ToList();
 
-            var products = _productService.SearchProducts(
+            var products = await _productService.SearchProductsAsync(
                 pageIndex: pageIndex, pageSize: pageSize,
-                storeId: _storeContext.CurrentStore.Id);
+                storeId: (await _storeContext.GetCurrentStoreAsync()).Id);
 
             while (products.Count != 0)
             {
@@ -443,9 +448,9 @@ namespace Nixtus.Plugin.Widgets.Lucene.Services
 
                 pageIndex += 1;
 
-                products = _productService.SearchProducts(
+                products = await _productService.SearchProductsAsync(
                     pageIndex: pageIndex, pageSize: pageSize,
-                    storeId: _storeContext.CurrentStore.Id,
+                    storeId: (await _storeContext.GetCurrentStoreAsync()).Id,
                     visibleIndividuallyOnly: true);
             }
         }

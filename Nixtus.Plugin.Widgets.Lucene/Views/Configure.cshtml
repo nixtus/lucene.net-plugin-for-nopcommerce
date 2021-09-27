@@ -1,15 +1,15 @@
-﻿@{
+﻿@model ConfigurationModel
+@{
     Layout = "_ConfigurePlugin";
 }
-@model ConfigurationModel
 @using Nixtus.Plugin.Widgets.Lucene.Models;
-@await Component.InvokeAsync("StoreScopeConfiguration")
 
+@await Component.InvokeAsync("StoreScopeConfiguration")
 <form asp-controller="Lucene" asp-action="Configure" method="post">
-    <div class="panel-group">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="form-group">
+    <div class="cards-group">
+        <div class="card card-default">
+            <div class="card-body">
+                <div class="form-group row">
                     <div class="col-md-3">
                         <nop-override-store-checkbox asp-for="Enabled_OverrideForStore" asp-input="Enabled" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
                         <nop-label asp-for="Enabled" />
@@ -19,7 +19,7 @@
                         <span asp-validation-for="Enabled"></span>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <div class="col-md-3">
                         <nop-override-store-checkbox asp-for="AutoCompleteSearchEnabled_OverrideForStore" asp-input="AutoCompleteSearchEnabled" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
                         <nop-label asp-for="AutoCompleteSearchEnabled" />
@@ -29,10 +29,10 @@
                         <span asp-validation-for="AutoCompleteSearchEnabled"></span>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <div class="col-md-9 col-md-offset-3">
-                        <input type="submit" name="save" class="btn bg-primary" value="@T("Admin.Common.Save")" />
-                        <button id="rebuild-index" class="btn bg-primary">Rebuild Index</button>
+                        <input type="submit" name="save" class="btn btn-primary" value="@T("Admin.Common.Save")" />
+                        <button id="rebuild-index" class="btn btn-primary">Rebuild Index</button>
                         <div id="message"></div>
                     </div>
                 </div>

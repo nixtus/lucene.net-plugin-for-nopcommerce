@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Copyright>Copyright © Nixtus, LLC</Copyright>
     <Company>Nixtus, LLC</Company>
     <Authors>Nixtus, LLC</Authors>
@@ -36,10 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00011" />
-    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00011" />
-    <PackageReference Include="Lucene.Net.Queries" Version="4.8.0-beta00011" />
-    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00011" />
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00014" />
+    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00014" />
+    <PackageReference Include="Lucene.Net.Queries" Version="4.8.0-beta00014" />
+    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00014" />
   </ItemGroup>
 
   <ItemGroup>

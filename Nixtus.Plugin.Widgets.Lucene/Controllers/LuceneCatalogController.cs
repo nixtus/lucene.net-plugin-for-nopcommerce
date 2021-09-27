@@ -7,6 +7,7 @@ using Nop.Services.Catalog;
 using Nop.Web.Controllers;
 using Nop.Web.Factories;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nixtus.Plugin.Widgets.Lucene.Controllers
 {
@@ -38,8 +39,13 @@ namespace Nixtus.Plugin.Widgets.Lucene.Controllers
             _luceneService = luceneService;
         }
 
-        public IActionResult SearchTermAutoComplete(string term)
+        public async Task<IActionResult> SearchTermAutoComplete(string term)
         {
+            if (string.IsNullOrWhiteSpace(term))
+                return Content("");
+
+            term = term.Trim();
+
             if (string.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
                 return Content("");
 
@@ -49,28 +55,27 @@ namespace Nixtus.Plugin.Widgets.Lucene.Controllers
 
             IPagedList<Product> products = null;
 
-            // use lucene search if enabled
             if (_luceneSettings.AutoCompleteSearchEnabled)
             {
                 _luceneService.GetLuceneDirectory();
 
                 var luceneProducts = _luceneService.Search(term);
 
-                products = new PagedList<Product>(luceneProducts.AsQueryable(), 0, productNumber);
+                products = await luceneProducts.AsQueryable().ToPagedListAsync(0, productNumber);
             }
             else
             {
-                products = _productService.SearchProducts(
-                    storeId: _storeContext.CurrentStore.Id,
+                products = await _productService.SearchProductsAsync(
+                    storeId: (await _storeContext.GetCurrentStoreAsync()).Id,
                     keywords: term,
-                    languageId: _workContext.WorkingLanguage.Id,
+                    languageId: (await _workContext.GetWorkingLanguageAsync()).Id,
                     visibleIndividuallyOnly: true,
                     pageSize: productNumber);
             }
 
             var showLinkToResultSearch = _catalogSettings.ShowLinkToAllResultInSearchAutoComplete && (products.TotalCount > productNumber);
 
-            var models = _productModelFactory.PrepareProductOverviewModels(products, false, _catalogSettings.ShowProductImagesInSearchAutoComplete, _mediaSettings.AutoCompleteSearchThumbPictureSize).ToList();
+            var models = (await _productModelFactory.PrepareProductOverviewModelsAsync(products, false, _catalogSettings.ShowProductImagesInSearchAutoComplete, _mediaSettings.AutoCompleteSearchThumbPictureSize)).ToList();
             var result = (from p in models
                           select new
                           {
