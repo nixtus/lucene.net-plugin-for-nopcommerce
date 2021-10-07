@@ -9,20 +9,20 @@ using System.Linq;
 
 namespace Nixtus.Plugin.Widgets.Lucene.Infrastructure
 {
-    public class RouterProvider : IRouteProvider
+    public class RouteProvider : IRouteProvider
     {
         public int Priority => 1;
 
         public void RegisterRoutes(IEndpointRouteBuilder endpointRouteBuilder)
         {
             var pattern = string.Empty;
-            if (DataSettingsManager.DatabaseIsInstalled)
+            if (DataSettingsManager.IsDatabaseInstalled())
             {
                 var localizationSettings = endpointRouteBuilder.ServiceProvider.GetRequiredService<LocalizationSettings>();
                 if (localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
                 {
                     var langservice = endpointRouteBuilder.ServiceProvider.GetRequiredService<ILanguageService>();
-                    var languages = langservice.GetAllLanguages().ToList();
+                    var languages = langservice.GetAllLanguagesAsync().Result.ToList();
                     pattern = "{language:lang=" + languages.FirstOrDefault().UniqueSeoCode + "}/";
                 }
             }

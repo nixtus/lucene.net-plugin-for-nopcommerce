@@ -4,6 +4,7 @@ using Nop.Services.Configuration;
 using Nop.Services.Localization;
 using Nop.Services.Plugins;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Nixtus.Plugin.Widgets.Lucene
 {
@@ -28,7 +29,7 @@ namespace Nixtus.Plugin.Widgets.Lucene
 
         #region Methods
 
-        public override void Install()
+        public override Task InstallAsync()
         {
             var settings = new LuceneSettings
             {
@@ -36,10 +37,10 @@ namespace Nixtus.Plugin.Widgets.Lucene
                 AutoCompleteSearchEnabled = true
             };
 
-            _settingService.SaveSetting(settings);
+            _settingService.SaveSettingAsync(settings);
 
             //locales
-            _localizationService.AddPluginLocaleResource(new Dictionary<string, string>
+            _localizationService.AddLocaleResourceAsync(new Dictionary<string, string>
             {
                 { "Plugins.Misc.Lucene.Fields.Enabled", "Enable Lucene search" },
                 { "Plugins.Misc.Lucene.Fields.Enabled.Hint", "Turn on the Lucene Full-Text search funtionality" },
@@ -47,15 +48,15 @@ namespace Nixtus.Plugin.Widgets.Lucene
                 { "Plugins.Misc.Lucene.Fields.AutoCompleteSearchEnabled.Hint", "Turn on the Lucene Full-Text search funtionality for auto complete" }
             });
 
-            base.Install();
+            return base.InstallAsync();
         }
 
-        public override void Uninstall()
+        public override Task UninstallAsync()
         {
-            _settingService.DeleteSetting<LuceneSettings>();
+            _settingService.DeleteSettingAsync<LuceneSettings>();
 
             //locales
-            _localizationService.DeletePluginLocaleResources(new List<string>
+            _localizationService.DeleteLocaleResourcesAsync(new List<string>
             {
                 "Plugins.Misc.Lucene.Fields.Enabled",
                 "Plugins.Misc.Lucene.Fields.Enabled.Hint",
@@ -63,7 +64,7 @@ namespace Nixtus.Plugin.Widgets.Lucene
                 "Plugins.Misc.Lucene.Fields.AutoCompleteSearchEnabled.Hint"
             });
 
-            base.Uninstall();
+            return base.UninstallAsync();
         }
 
         /// <summary>

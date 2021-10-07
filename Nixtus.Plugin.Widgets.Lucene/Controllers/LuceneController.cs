@@ -6,6 +6,7 @@ using Nop.Services.Configuration;
 using Nop.Web.Framework;
 using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc.Filters;
+using System.Threading.Tasks;
 
 namespace Nixtus.Plugin.Widgets.Lucene.Controllers
 {
@@ -16,6 +17,7 @@ namespace Nixtus.Plugin.Widgets.Lucene.Controllers
         private readonly ISettingService _settingService;
         private readonly ILuceneService _luceneService;
         private readonly IStoreContext _storeContext;
+
         #endregion
 
         #region Constructors
@@ -33,11 +35,11 @@ namespace Nixtus.Plugin.Widgets.Lucene.Controllers
 
         [AuthorizeAdmin]
         [Area(AreaNames.Admin)]
-        public ActionResult Configure()
+        public async Task<ActionResult> Configure()
         {
             //load settings for a chosen store scope
-            var storeScope = _storeContext.ActiveStoreScopeConfiguration;
-            var luceneSettings = _settingService.LoadSetting<LuceneSettings>(storeScope);
+            var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
+            var luceneSettings = await _settingService.LoadSettingAsync<LuceneSettings>(storeScope);
 
             var model = new ConfigurationModel();
             model.Enabled = luceneSettings.Enabled;
@@ -46,8 +48,8 @@ namespace Nixtus.Plugin.Widgets.Lucene.Controllers
             model.ActiveStoreScopeConfiguration = storeScope;
             if (storeScope > 0)
             {
-                model.Enabled_OverrideForStore = _settingService.SettingExists(luceneSettings, x => x.Enabled, storeScope);
-                model.AutoCompleteSearchEnabled_OverrideForStore = _settingService.SettingExists(luceneSettings, x => x.AutoCompleteSearchEnabled, storeScope);
+                model.Enabled_OverrideForStore = await _settingService.SettingExistsAsync(luceneSettings, x => x.Enabled, storeScope);
+                model.AutoCompleteSearchEnabled_OverrideForStore = await _settingService.SettingExistsAsync(luceneSettings, x => x.AutoCompleteSearchEnabled, storeScope);
             }
 
             return View("~/Plugins/Nixtus.Misc.Lucene/Views/Configure.cshtml", model);
@@ -57,40 +59,40 @@ namespace Nixtus.Plugin.Widgets.Lucene.Controllers
         [FormValueRequired("save")]
         [AuthorizeAdmin]
         [Area(AreaNames.Admin)]
-        public ActionResult Configure(ConfigurationModel model)
+        public async Task<ActionResult> Configure(ConfigurationModel model)
         {
             if (!ModelState.IsValid)
-                return Configure();
+                return await Configure();
 
             //load settings for a chosen store scope
-            var storeScope = _storeContext.ActiveStoreScopeConfiguration;
-            var luceneSettings = _settingService.LoadSetting<LuceneSettings>(storeScope);
+            var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
+            var luceneSettings = await _settingService.LoadSettingAsync<LuceneSettings>(storeScope);
 
             luceneSettings.Enabled = model.Enabled;
             luceneSettings.AutoCompleteSearchEnabled = model.AutoCompleteSearchEnabled;
 
             if (model.Enabled_OverrideForStore || storeScope == 0)
-                _settingService.SaveSetting(luceneSettings, x => x.Enabled, storeScope, false);
+                await _settingService.SaveSettingAsync(luceneSettings, x => x.Enabled, storeScope, false);
             else if (storeScope > 0)
-                _settingService.DeleteSetting(luceneSettings, x => x.Enabled, storeScope);
+                await _settingService.DeleteSettingAsync(luceneSettings, x => x.Enabled, storeScope);
 
             if (model.AutoCompleteSearchEnabled_OverrideForStore || storeScope == 0)
-                _settingService.SaveSetting(luceneSettings, x => x.AutoCompleteSearchEnabled, storeScope, false);
+                await _settingService.SaveSettingAsync(luceneSettings, x => x.AutoCompleteSearchEnabled, storeScope, false);
             else if (storeScope > 0)
-                _settingService.DeleteSetting(luceneSettings, x => x.AutoCompleteSearchEnabled, storeScope);
+                await _settingService.DeleteSettingAsync(luceneSettings, x => x.AutoCompleteSearchEnabled, storeScope);
 
             //now clear settings cache
-            _settingService.ClearCache();
+            await _settingService.ClearCacheAsync();
 
-            return Configure();
+            return await Configure();
         }
 
         [HttpPost]
         [AuthorizeAdmin]
         [Area(AreaNames.Admin)]
-        public ActionResult RebuildIndex()
+        public async Task<ActionResult> RebuildIndex()
         {
-            _luceneService.BuildIndex();
+            await _luceneService.BuildIndex();
 
             return Json(new
             {
